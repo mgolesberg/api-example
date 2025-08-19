@@ -1,0 +1,8 @@
+__pycache__/
+venv/
+.env
+.coverage
+.flake8
+htmlcov/
+.vscode/
+.pytest_cache/

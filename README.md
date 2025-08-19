@@ -10,7 +10,7 @@ A comprehensive FastAPI-based REST API for user management, product catalog, and
 - **Database Models**: SQLModel-based models with PostgreSQL support
 - **User Management**: Complete CRUD operations for user accounts with validation
 - **Product Catalog**: Product management with inventory tracking
-- **Order System**: Shopping cart, purchase processing, and order lifecycle management
+- **Order System**: Advanced shopping cart with real-time quantity updates, automatic total calculation, and seamless checkout process
 - **Allergy Management**: User allergy tracking and management
 - **Interest/Preference System**: User interest and dislike tracking
 
@@ -118,47 +118,53 @@ Once the server is running, you can access:
 
 ## 🔧 API Endpoints
 
-### Users (`/users`)
+### Users (`/user`)
 
-- `GET /users` - List all users
-- `GET /users/{user_id}` - Get user by ID
-- `POST /users` - Create new user
-- `PUT /users/{user_id}` - Update user
-- `DELETE /users/{user_id}` - Deactivate user
+- `GET /user/{email_or_id}` - Get user by email or ID
+- `POST /user/` - Create new user
+- `PUT /user/{email_or_id}/profile` - Update user profile
+- `PUT /user/{user_id}/deactivate` - Deactivate user account
+- `PUT /user/{user_id}/delete` - Mark user for deletion
+- `GET /user/{email_or_id}/allergies` - Get user allergies
+- `POST /user/{user_id}/allergies` - Add allergy to user
+- `DELETE /user/{user_id}/allergies` - Remove allergy from user
 
-### Products (`/products`)
+### Products (`/product`)
 
-- `GET /products` - List all products
-- `GET /products/{product_id}` - Get product by ID
-- `POST /products` - Create new product
-- `PUT /products/{product_id}` - Update product
-- `DELETE /products/{product_id}` - Delete product
+- `GET /product/` - List all products
+- `GET /product/{product_id}` - Get product by ID
+- `POST /product/` - Create new product
+- `PUT /product/{product_id}` - Update product
+- `DELETE /product/{product_id}` - Delete product
 
-### Orders (`/orders`)
+### Shopping Cart & Orders (`/buy`)
 
-- `GET /orders` - List all orders
-- `GET /orders/{order_id}` - Get order by ID
-- `POST /orders` - Create new order
-- `PUT /orders/{order_id}` - Update order status
+- `GET /buy/{user_id}` - Get all orders for a user (including cart and completed orders)
+- `POST /buy/` - Add product to cart or add it to a new cart
+- `PUT /buy/` - Update product quantity in cart
+- `DELETE /buy/` - Remove product from cart by setting quantity to 0
+- `POST /buy/checkout/{user_id}` - Checkout cart and complete order
 
-### Allergies (`/allergies`)
+### Allergies (`/allergy`)
 
-- `GET /allergies` - List all allergy types
-- `GET /users/{user_id}/allergies` - Get user allergies
-- `POST /users/{user_id}/allergies` - Add allergy to user
-- `DELETE /users/{user_id}/allergies/{allergy_id}` - Remove allergy from user
+- `GET /allergy/` - List all allergy types
+- `POST /allergy/` - Create new allergy type
+- `PUT /allergy/{allergy_name}` - Update allergy type
+- `DELETE /allergy/{allergy_name}` - Delete allergy type
 
-### Interests (`/interests`)
+### Interests (`/interest`)
 
-- `GET /interests` - List all interest types
-- `GET /users/{user_id}/interests` - Get user interests
-- `POST /users/{user_id}/interests` - Add interest to user
+- `GET /interest/{user_id}` - Get user interests
+- `POST /interest/` - Create new interest type
+- `PUT /interest/{interest_id}` - Update interest type
+- `DELETE /interest/{interest_id}` - Delete interest type
 
-### Dislikes (`/dislikes`)
+### Dislikes (`/dislike`)
 
-- `GET /dislikes` - List all dislike types
-- `GET /users/{user_id}/dislikes` - Get user dislikes
-- `POST /users/{user_id}/dislikes` - Add dislike to user
+- `GET /dislike/{user_id}` - Get user dislikes
+- `POST /dislike/` - Create new dislike type
+- `PUT /dislike/{dislike_id}` - Update dislike type
+- `DELETE /dislike/{dislike_id}` - Delete dislike type
 
 ## 🧪 Testing
 
@@ -182,12 +188,13 @@ pytest tests/routes/test_user.py
 ### Core Entities
 
 - **User**: Personal information, address, account status
-- **Product**: Product details, pricing, inventory
-- **Order**: Shopping cart and order management
-- **Purchase**: Individual items within orders
+- **Product**: Product details, pricing, inventory with quantity tracking
+- **Order**: Shopping cart and order management with checkout status
+- **Purchase**: Individual items within orders with quantity and total amount calculation
 - **Allergy**: Predefined allergy options
 - **Interest**: User preference categories
 - **Dislike**: User aversion categories
+- **UserAllergy**: Association table for many-to-many relationship between users and allegies
 
 ### Key Features
 
@@ -211,6 +218,6 @@ The project maintains high code quality standards:
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License. This is just an example, but I suppose you're welcome to it if you really like it.
 
 **Built with ❤️ using FastAPI, SQLModel, and modern Python practices**

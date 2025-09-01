@@ -1,64 +1,68 @@
+"""
+Streamlit Application Main Entry Point.
+
+Orchestrates app structure, authentication, sidebar config, and dynamic page
+navigation based on user roles. Uses menu-driven navigation where menu.py
+defines page configurations with relative file paths that st.navigation()
+dynamically loads.
+
+Key Components:
+- Role-based access control (Buyer, Admin, None)
+- Dynamic page loading from relative paths
+- Sidebar branding with logo and description
+- Session state management for user authentication
+"""
+
 import streamlit as st
-
-if "role" not in st.session_state:
-    st.session_state.role = None
-
-ROLES = [None, "Buyer", "Admin"]
+import menu
 
 
-def login():
-    st.header("Log In")
-    role = st.selectbox("Select your role", ROLES)
-    if st.button("Log In"):
-        st.session_state.role = role
-        st.rerun()
+def run_app():
+    """
+    Main application runner that sets up the Streamlit interface.
+
+    Configures title, sidebar branding, role-based access control, and dynamic
+    navigation menus. The navigation system works by menu.py returning Page
+    objects with relative file paths (e.g., "request/request_1.py") that
+    st.navigation() automatically loads when pages are selected.
+    """
+    st.title("My App")
+
+    # st.sidebar always renders at the bottom of the sidebar
+    st.sidebar.image("mockbasket.png")
+    st.sidebar.title("Mock Basket")
+    st.sidebar.write("Your favorite example website!")
+    st.sidebar.link_button(
+        "GitHub Repo",
+        "https://github.com/mgolesberg/api-example",
+        type="primary",
+        help="Link to Repo and Docs",
+        use_container_width=False,
+    )
+
+    page_dict = {}
+
+    if st.session_state.role in ["Buyer", "Admin"]:
+        page_dict["Buyer"] = menu.get_request_pages()
+    if st.session_state.role == "Admin":
+        page_dict["Admin"] = menu.get_admin_pages()
+
+    if len(page_dict) > 0:  # Marks when the user is logged in
+        pg = st.navigation({"Account": menu.get_account_pages()} | page_dict)
+    else:
+        pg = st.navigation([st.Page(menu.login)])
+
+    pg.run()
 
 
-def logout():
-    st.session_state.role = None
-    st.rerun()
+def main():
+    """
+    Entry point function that calls the main application runner.
+
+    Ensures the app can be run both as a module and as a script.
+    """
+    run_app()
 
 
-role = st.session_state.role
-
-logout_page = st.Page(logout, title="Log out", icon=":material/logout:")
-settings = st.Page("settings.py", title="Settings", icon=":material/settings:")
-request_1 = st.Page(
-    "request/request_1.py",
-    title="Request 1",
-    icon=":material/help:",
-    default=(role == "Buyer"),
-)
-request_2 = st.Page(
-    "request/request_2.py", title="Request 2", icon=":material/bug_report:"
-)
-
-admin_1 = st.Page(
-    "admin/admin_1.py",
-    title="Admin 1",
-    icon=":material/person_add:",
-    default=(role == "Admin"),
-)
-admin_2 = st.Page("admin/admin_2.py", title="Admin 2", icon=":material/security:")
-
-account_pages = [logout_page, settings]
-request_pages = [request_1, request_2]
-admin_pages = [admin_1, admin_2]
-
-st.title("My App")
-
-st.logo("mockbasket.png", size="large")
-
-page_dict = {}
-
-if st.session_state.role in ["Buyer", "Admin"]:
-    page_dict["Buyer"] = request_pages
-if st.session_state.role == "Admin":
-    page_dict["Admin"] = admin_pages
-
-if len(page_dict) > 0:  # Marks when the user is logged in
-    pg = st.navigation({"Account": account_pages} | page_dict)
-else:
-    pg = st.navigation([st.Page(login)])
-
-pg.run()
+if __name__ == "__main__":
+    main()

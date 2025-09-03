@@ -41,10 +41,11 @@ def run_app():
     )
 
     page_dict = {}
+    current_role = menu.get_current_role()
 
-    if st.session_state.role in ["Buyer", "Admin"]:
+    if current_role in ["Buyer", "Admin"]:
         page_dict["Buyer"] = menu.get_request_pages()
-    if st.session_state.role == "Admin":
+    if current_role == "Admin":
         page_dict["Admin"] = menu.get_admin_pages()
 
     if len(page_dict) > 0:  # Marks when the user is logged in

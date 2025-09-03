@@ -24,11 +24,22 @@ File Path Resolution:
 
 import streamlit as st
 
-if "role" not in st.session_state:
-    st.session_state.role = None
-
 ROLES = [None, "Buyer", "Admin"]
-role = st.session_state.role
+
+
+def get_current_role():
+    """
+    Get the current user role from session state.
+    Used to avoid resetting the role everytime the menu module is imported.
+
+    Returns
+    -------
+    str or None
+        The current user role
+    """
+    if "role" not in st.session_state:
+        st.session_state.role = None
+    return st.session_state.role
 
 
 def login():
@@ -91,9 +102,10 @@ def get_request_pages():
     list
         List of st.Page objects for request functionality
     """
+    role = get_current_role()
     request_1 = st.Page(
         "request/request_1.py",
-        title="Request 1",
+        title="My Interests",
         icon=":material/help:",
         default=(role == "Buyer"),
     )
@@ -121,6 +133,7 @@ def get_admin_pages():
     list
         List of st.Page objects for admin functionality
     """
+    role = get_current_role()
     admin_1 = st.Page(
         "admin/admin_1.py",
         title="Admin 1",

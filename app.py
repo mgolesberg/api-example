@@ -17,6 +17,7 @@ The application follows REST philosophy principles:
 - Resource identity belongs in the URL
 - Resource representation belongs in the body
 """
+
 from fastapi import FastAPI
 from src.routes.interest import router as interest_router
 from src.routes.dislike import router as dislike_router

@@ -23,11 +23,21 @@ File Path Resolution:
 """
 
 import streamlit as st
+import user_and_requests
 
-ROLES = [None, "Buyer", "Admin"]
+USER = [
+    None,
+    "john.smith@email.com",
+    "sarah.johnson@email.com",
+    "michael.williams@email.com",
+    "emily.brown@email.com",
+    "david.davis@email.com",
+]
+# These are the users in the example data
+# TODO Add a route to get all users which would allow creating other users
 
 
-def get_current_role():
+def get_current_user_and_role():
     """
     Get the current user role from session state.
     Used to avoid resetting the role everytime the menu module is imported.
@@ -37,28 +47,34 @@ def get_current_role():
     str or None
         The current user role
     """
+    if "user" not in st.session_state:
+        st.session_state.user = None
     if "role" not in st.session_state:
         st.session_state.role = None
-    return st.session_state.role
+    return st.session_state.user, st.session_state.role
 
 
 def login():
     """
     Login page function that handles user authentication.
 
-    Provides role selection interface where users choose access level. Updates
+    Provides user selection interface where users choose access level. Updates
     session state with selected role and triggers page rerun to refresh
     navigation menu based on new role.
 
     Available roles:
     - None: Unauthenticated user (login page only)
-    - Buyer: Can access request pages and account management
+    - Buyer: Can access request pages and account management.
     - Admin: Can access all pages including admin functions
     """
     st.header("Log In")
-    role = st.selectbox("Select your role", ROLES)
+    user = st.selectbox("Select your user", USER)
     if st.button("Log In"):
-        st.session_state.role = role
+        st.session_state.user = user_and_requests.User(email=user)
+        if user == "david.davis@email.com":
+            st.session_state.role = "Admin"
+        else:
+            st.session_state.role = "Buyer"
         st.rerun()
 
 
@@ -77,6 +93,7 @@ def get_account_pages():
     """
 
     def logout():
+        st.session_state.user = None
         st.session_state.role = None
         st.rerun()
 
@@ -88,10 +105,10 @@ def get_account_pages():
 
 def get_request_pages():
     """
-    Returns request pages available to Buyer and Admin roles.
+    Returns request pages available to Buyer and Admin users.
 
     Creates Page objects with relative file paths to request modules:
-    - request_1.py: Primary request interface (default for Buyer role)
+    - request_1.py: Primary request interface (default for Buyer user)
     - request_2.py: Secondary request interface
 
     The relative paths (e.g., "request/request_1.py") are resolved by
@@ -102,9 +119,9 @@ def get_request_pages():
     list
         List of st.Page objects for request functionality
     """
-    role = get_current_role()
-    request_1 = st.Page(
-        "request/request_1.py",
+    user, role = get_current_user_and_role()
+    user_preferences = st.Page(
+        "request/user_preferences.py",
         title="My Interests",
         icon=":material/help:",
         default=(role == "Buyer"),
@@ -113,16 +130,16 @@ def get_request_pages():
         "request/request_2.py", title="Request 2", icon=":material/bug_report:"
     )
 
-    request_pages = [request_1, request_2]
+    request_pages = [user_preferences, request_2]
     return request_pages
 
 
 def get_admin_pages():
     """
-    Returns admin pages available only to Admin role.
+    Returns admin pages available only to Admin user.
 
     Creates Page objects with relative file paths to admin modules:
-    - admin_1.py: Primary admin interface (default for Admin role)
+    - admin_1.py: Primary admin interface (default for Admin user)
     - admin_2.py: Secondary admin interface
 
     The relative paths (e.g., "admin/admin_1.py") are resolved by
@@ -133,7 +150,7 @@ def get_admin_pages():
     list
         List of st.Page objects for admin functionality
     """
-    role = get_current_role()
+    user, role = get_current_user_and_role()
     admin_1 = st.Page(
         "admin/admin_1.py",
         title="Admin 1",

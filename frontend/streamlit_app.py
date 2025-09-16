@@ -29,7 +29,7 @@ def run_app():
     st.title("My App")
 
     # st.sidebar always renders at the bottom of the sidebar
-    st.sidebar.image("mockbasket.png")
+    st.sidebar.image("images/mockbasket.png")
     st.sidebar.title("Mock Basket")
     st.sidebar.write("Your favorite example website!")
     st.sidebar.link_button(
@@ -41,11 +41,11 @@ def run_app():
     )
 
     page_dict = {}
-    current_role = menu.get_current_role()
+    user, role = menu.get_current_user_and_role()
 
-    if current_role in ["Buyer", "Admin"]:
+    if role in ["Buyer", "Admin"]:
         page_dict["Buyer"] = menu.get_request_pages()
-    if current_role == "Admin":
+    if role == "Admin":
         page_dict["Admin"] = menu.get_admin_pages()
 
     if len(page_dict) > 0:  # Marks when the user is logged in

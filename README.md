@@ -1,10 +1,11 @@
 # Example API
 
-A comprehensive FastAPI-based REST API for user management, product catalog, and e-commerce operations. This project demonstrates modern Python web development practices with a focus on clean architecture, comprehensive testing, and robust database management.
+A comprehensive FastAPI-based REST API with Streamlit frontend for user management, product catalog, and e-commerce operations. This project demonstrates modern Python web development practices with a focus on clean architecture, comprehensive testing, and robust database management.
 
-## 🚀 Features
+## Features
 
 - **RESTful API Design**: Follows REST philosophy principles
+- **Streamlit Frontend**: Interactive web interface with role-based access control
 - **Comprehensive Testing**: Full test coverage with pytest
 - **Code Quality**: Linting with pylint and code formatting with black
 - **Database Models**: SQLModel-based models with PostgreSQL support
@@ -13,10 +14,29 @@ A comprehensive FastAPI-based REST API for user management, product catalog, and
 - **Order System**: Advanced shopping cart with real-time quantity updates, automatic total calculation, and seamless checkout process
 - **Allergy Management**: User allergy tracking and management
 - **Interest/Preference System**: User interest and dislike tracking
+- **Sales Analytics**: Admin dashboard with interactive charts and metrics
 
 ![Swagger Docs Example](images/api_swagger_v0.1.png)
 
-## 🏗️ Architecture
+## Frontend Interface
+
+The Streamlit frontend provides an intuitive web interface with role-based access control. The Streamlit is still in development, and not yet containerized.
+
+![User Preferences](images/frontend_preferences.png)
+
+![Product Catalog](images/frontend_products.png)
+
+![Sales Analytics](images/frontend_metrics.png)
+
+### Frontend Features
+
+- **Role-based Navigation**: Different interfaces for Buyers and Admins
+- **User Preferences Management**: Manage interests, dislikes, and allergies
+- **Product Catalog**: Browse and purchase products with detailed information
+- **Sales Analytics Dashboard**: Interactive charts and metrics for administrators
+- **Responsive Design**: Clean, modern interface with styled components
+
+## Architecture
 
 The project follows a clean, modular architecture:
 
@@ -26,22 +46,30 @@ src/
 ├── routes/       # API endpoint definitions
 ├── db_init/      # Database initialization and sample data
 └── tests/        # Comprehensive test suite
+
+frontend/
+├── streamlit_app.py    # Main Streamlit application entry point
+├── user_and_requests.py # API client and user management utilities
+├── menu.py             # Navigation and role management
+├── users/              # User-facing pages (preferences, sales)
+└── admin/              # Admin-only pages (analytics, management)
 ```
 
 ### Core Components
 
 - **FastAPI**: Modern, fast web framework for building APIs
+- **Streamlit**: Interactive web application framework for the frontend
 - **SQLModel**: Combines SQLAlchemy and Pydantic for type-safe database operations
 - **PostgreSQL**: Robust relational database backend
 - **Pytest**: Testing framework with coverage reporting
 
-## 📋 Prerequisites
+## Prerequisites
 
 - Python 3.8+
 - PostgreSQL database
 - pip (Python package manager)
 
-## 🛠️ Running the app in Docker
+## Running the app in Docker
 
 1.  Make sure you have Docker Desktop installed
 
@@ -49,7 +77,7 @@ src/
     docker compose up
     ```
 
-## 🛠️ Running the app locally
+## Running the app locally
 
 1. **Clone the repository**
 
@@ -91,7 +119,7 @@ src/
    python -m src.db_init.tables_initialize
    ```
 
-## 🚀 Running the Application
+## Running the Application
 
 ### Development Server
 
@@ -107,7 +135,17 @@ uvicorn app:app --host 0.0.0.0 --port 8000
 
 The API will be available at `http://localhost:8000`
 
-## 📚 API Documentation
+### Frontend Application
+
+To run the Streamlit frontend:
+
+```bash
+streamlit run frontend/streamlit_app.py
+```
+
+The frontend will be available at `http://localhost:8501`
+
+## API Documentation
 
 Once the server is running, you can access:
 
@@ -116,7 +154,7 @@ Once the server is running, you can access:
 
 ![API Example](images/api_get_allergy_v0.1.png)
 
-## 🔧 API Endpoints
+## API Endpoints
 
 ### Users (`/user`)
 
@@ -166,7 +204,7 @@ Once the server is running, you can access:
 - `PUT /dislike/{dislike_id}` - Update dislike type
 - `DELETE /dislike/{dislike_id}` - Delete dislike type
 
-## 🧪 Testing
+## Testing
 
 Run the test suite with coverage:
 
@@ -183,7 +221,7 @@ pytest tests/routes/test_user.py
 
 ![Current Coverage](images/test_cov_v0.1.png)
 
-## 📊 Database Models
+## Database Models
 
 ### Core Entities
 
@@ -203,7 +241,7 @@ pytest tests/routes/test_user.py
 - **Validation**: Phone number validation (E.164 format), email validation
 - **Audit Fields**: Creation and update timestamps
 
-## 🔍 Code Quality
+## Code Quality
 
 The project maintains high code quality standards:
 
@@ -212,12 +250,12 @@ The project maintains high code quality standards:
 - **Type Hints**: Comprehensive type annotations
 - **Docstrings**: Detailed documentation for all functions and classes
 
-## 🚀 Development
+## Development
 
-### Next project: Building a Frontend
+This project demonstrates a full-stack application with both REST API backend and interactive web frontend. The architecture separates concerns between data management (FastAPI), user interface (Streamlit), and database operations (SQLModel with PostgreSQL).
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License. This is just an example, but I suppose you're welcome to it if you really like it.
 
-**Built with ❤️ using FastAPI, SQLModel, and modern Python practices**
+**Built with FastAPI, Streamlit, SQLModel, and modern Python practices**

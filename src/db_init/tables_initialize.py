@@ -104,12 +104,12 @@ def initialize_test_data(session: Session):
 
 def main():
     """Main function to initialize database tables and test data.
-    
+
     This function orchestrates the complete database setup process:
     1. Drops existing tables (if any)
     2. Creates new tables based on current models
     3. Populates tables with test data
-    
+
     Raises
     ------
     Exception

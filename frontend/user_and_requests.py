@@ -1,4 +1,32 @@
+"""
+User and API Request Management Module.
+
+This module provides comprehensive classes and functions for managing user data,
+API interactions, and e-commerce functionality in the Streamlit frontend application.
+
+Key Components:
+- User: Manages user profiles, interests, dislikes, and allergies
+- OrderPurchase: Handles order and purchase data retrieval and processing
+- Product: Manages product information and cart operations
+- Utility functions for retrieving users, products, and product data
+
+The module serves as the primary interface between the Streamlit frontend and the
+FastAPI backend, providing clean abstractions for common operations like user
+authentication, product browsing, and order management.
+
+API Integration:
+- All classes interact with the FastAPI backend running on localhost:8000
+- Handles HTTP requests using the requests library
+- Provides error handling and data validation
+- Supports CRUD operations for user preferences and product management
+
+Usage:
+    Call these classes on streamlit pages that require them.
+"""
+
 import requests
+from uuid import UUID
+import pandas as pd
 
 
 class User:
@@ -306,4 +334,276 @@ class User:
         )
         response.raise_for_status()
         self.allergies = response.json()
+        return response.json()
+
+
+def get_all_users():
+    """
+    Get all user IDs.
+
+    Returns
+    -------
+    list
+        A list of user IDs.
+
+    Notes
+    -----
+    This is a placeholder function that returns a fixed list.
+    TODO: Add an API call rather than using a fixed list for an example.
+    """
+    return [1, 2, 3, 4, 5]
+
+
+class OrderPurchase:
+    """
+    A class to manage order and purchase data for a user.
+
+    Parameters
+    ----------
+    user_id : int
+        The user's unique identifier.
+
+    Attributes
+    ----------
+    user_id : int
+        The user's unique identifier.
+    base_url : str
+        The base URL for API requests.
+    open_order_and_purchases : list
+        List of open (unchecked out) orders and purchases.
+    closed_orders_and_purchases : list
+        List of closed (checked out) orders and purchases.
+    """
+
+    def __init__(self, user_id: int):
+        self.user_id = user_id
+        self.base_url = "http://localhost:8000"
+        self.get_orders()
+
+    def get_orders(self):
+        """
+        Fetch all orders and purchases for the user from the API.
+
+        Separates orders into open (unchecked out) and closed (checked out) lists.
+        Not every streamlit action will require a refresh of the orders from the API.
+
+        Raises
+        ------
+        requests.RequestException
+            If the API request fails.
+        """
+        response = requests.get(f"{self.base_url}/buy/{self.user_id}")
+        response.raise_for_status()
+        all_orders_and_purchases = response.json()
+        self.open_order_and_purchases = [
+            order
+            for order in all_orders_and_purchases
+            if order["order"]["checked_out"] is False
+        ]
+        self.closed_orders_and_purchases = [
+            order
+            for order in all_orders_and_purchases
+            if order["order"]["checked_out"] is True
+        ]
+
+    def safe_open_order(self):
+        """
+        Get the single open order for the user.
+
+        Returns
+        -------
+        dict or None
+            The open order data if exactly one exists, None if no open orders.
+
+        Raises
+        ------
+        ValueError
+            If multiple open orders are found for the user.
+        requests.RequestException
+            If the API request fails during order fetching.
+        """
+        if not hasattr(self, "open_order_and_purchases"):
+            self.get_orders()
+        if len(self.open_order_and_purchases) > 1:
+            raise ValueError(f"Multiple open orders found for user {self.user_id}")
+        elif len(self.open_order_and_purchases) == 0:
+            return None
+        return self.open_order_and_purchases[0]
+
+    def purchases_as_datafame(self, check_open_orders: bool):
+        """
+        Convert orders and purchases to a pandas DataFrame.
+
+        Parameters
+        ----------
+        check_open_orders : bool
+            If True, returns data for open orders. If False, returns data for closed orders.
+
+        Returns
+        -------
+        pd.DataFrame
+            A DataFrame with flattened order and purchase data.
+
+        Raises
+        ------
+        requests.RequestException
+            If the API request fails during order fetching.
+        """
+        if check_open_orders:
+            if not hasattr(self, "open_order_and_purchases"):
+                self.get_orders()
+            orders = self.open_order_and_purchases
+        else:
+            if not hasattr(self, "closed_orders_and_purchases"):
+                self.get_orders()
+            orders = self.closed_orders_and_purchases
+        flattened_data = []
+        for order_data in orders:
+            order_info = order_data["order"]
+            purchases = order_data["purchases"]
+
+            for purchase in purchases:
+                row = {
+                    "order_id": order_info["id"],
+                    "order_total_amount": order_info["total_amount"],
+                    "order_user_id": order_info["user_id"],
+                    "order_created_at": order_info["created_at"],
+                    "order_checked_out": order_info["checked_out"],
+                    "order_updated_at": order_info["updated_at"],
+                    "purchase_id": purchase["id"],
+                    "quantity": purchase["quantity"],
+                    "status": purchase["status"],
+                    "product_id": purchase["product_id"],
+                    "purchase_user_id": purchase["user_id"],
+                    "purchase_total_amount": purchase["total_amount"],
+                    "purchase_created_at": purchase["created_at"],
+                    "purchase_updated_at": purchase["updated_at"],
+                }
+            flattened_data.append(row)
+        return pd.DataFrame(flattened_data)
+
+
+def get_all_products():
+    """
+    Get all products from the API.
+
+    Returns
+    -------
+    list
+        A list of dictionaries containing product information.
+
+    Raises
+    ------
+    requests.RequestException
+        If the API request fails.
+    """
+    base_url = "http://localhost:8000"
+    response = requests.get(f"{base_url}/product/")
+    response.raise_for_status()
+    return response.json()
+
+
+def get_all_product_ids():
+    """
+    Get all product IDs from the API.
+
+    Returns
+    -------
+    list
+        A list of product IDs.
+
+    Raises
+    ------
+    requests.RequestException
+        If the API request fails.
+    """
+    response_json = get_all_products()
+    return [product["id"] for product in response_json]
+
+
+def get_all_active_in_stock_products():
+    """
+    Get all active products that are in stock.
+
+    Returns
+    -------
+    list
+        A list of dictionaries containing active, in-stock product information.
+
+    Raises
+    ------
+    requests.RequestException
+        If the API request fails.
+    """
+    response_json = get_all_products()
+    return [
+        product
+        for product in response_json
+        if product["is_active"] and product["quantity"] > 0
+    ]
+
+
+class Product:
+    """
+    A class to manage product data and operations.
+
+    Parameters
+    ----------
+    product_id : str
+        The product's unique identifier.
+
+    Attributes
+    ----------
+    product_id : UUID
+        The product's unique identifier.
+    base_url : str
+        The base URL for API requests.
+    product_info : dict
+        Dictionary containing product information from the API.
+    """
+
+    def __init__(self, product_id: str):
+        self.product_id = UUID(product_id)
+        self.base_url = "http://localhost:8000"
+        self.get_product_info()
+
+    def get_product_info(self):
+        """
+        Fetch product information from the API.
+
+        Raises
+        ------
+        requests.RequestException
+            If the API request fails.
+        """
+        response = requests.get(f"{self.base_url}/product/{self.product_id}")
+        response.raise_for_status()
+        self.product_info = response.json()
+
+    def add_to_cart(self, product_id: str, user_id: int, quantity: int = 1):
+        """
+        Add a product to the user's cart.
+
+        Parameters
+        ----------
+        product_id : str
+            The product's unique identifier.
+        user_id : int
+            The user's unique identifier.
+        quantity : int, optional
+            The quantity to add to cart, by default 1.
+
+        Returns
+        -------
+        dict
+            The response from the API.
+
+        Raises
+        ------
+        requests.RequestException
+            If the API request fails.
+        """
+        json_body = {"product_id": product_id, "user_id": user_id, "quantity": quantity}
+        response = requests.post(f"{self.base_url}/buy", json=json_body)
+        response.raise_for_status()
         return response.json()

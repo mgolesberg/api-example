@@ -6,17 +6,17 @@ Manages role-based access control and provides functions that return Page
 objects with relative file paths for dynamic navigation.
 
 The menu system works by defining Page objects with relative paths to Python
-files (e.g., "request/request_1.py") that are resolved relative to the current
+files (e.g., "users/user_preferences.py") that are resolved relative to the current
 working directory when st.navigation() loads them.
 
 Key Functions:
 - login(): Handles user authentication and role selection
 - get_account_pages(): Returns account management pages (logout, settings)
-- get_request_pages(): Returns buyer-accessible request pages
+- get_user_pages(): Returns buyer-accessible user pages
 - get_admin_pages(): Returns admin-only management pages
 
 File Path Resolution:
-- Relative paths like "request/request_1.py" are resolved from the app's root
+- Relative paths like "users/user_preferences.py" are resolved from the app's root
   directory
 - st.navigation() automatically loads these files when pages are selected
 - This allows for modular page organization without hardcoded absolute paths
@@ -64,7 +64,7 @@ def login():
 
     Available roles:
     - None: Unauthenticated user (login page only)
-    - Buyer: Can access request pages and account management.
+    - Buyer: Can access user pages and account management.
     - Admin: Can access all pages including admin functions
     """
     st.header("Log In")
@@ -103,35 +103,35 @@ def get_account_pages():
     return account_pages
 
 
-def get_request_pages():
+def get_user_pages():
     """
-    Returns request pages available to Buyer and Admin users.
+    Returns user pages available to Buyer and Admin users.
 
-    Creates Page objects with relative file paths to request modules:
-    - request_1.py: Primary request interface (default for Buyer user)
-    - request_2.py: Secondary request interface
+    Creates Page objects with relative file paths to user modules:
+    - user_preferences.py: User preferences interface (default for Buyer user)
+    - sales_page.py: Sales page interface
 
-    The relative paths (e.g., "request/request_1.py") are resolved by
+    The relative paths (e.g., "users/user_preferences.py") are resolved by
     st.navigation() when the pages are loaded.
 
     Returns
     -------
     list
-        List of st.Page objects for request functionality
+        List of st.Page objects for user functionality
     """
     user, role = get_current_user_and_role()
     user_preferences = st.Page(
-        "request/user_preferences.py",
+        "users/user_preferences.py",
         title="My Interests",
         icon=":material/help:",
         default=(role == "Buyer"),
     )
-    request_2 = st.Page(
-        "request/request_2.py", title="Request 2", icon=":material/bug_report:"
+    sales_page = st.Page(
+        "users/sales_page.py", title="Sales Page", icon=":material/shopping_cart:"
     )
 
-    request_pages = [user_preferences, request_2]
-    return request_pages
+    user_pages = [user_preferences, sales_page]
+    return user_pages
 
 
 def get_admin_pages():
@@ -139,10 +139,10 @@ def get_admin_pages():
     Returns admin pages available only to Admin user.
 
     Creates Page objects with relative file paths to admin modules:
-    - admin_1.py: Primary admin interface (default for Admin user)
+    - sales_metrics.py: Sales metrics dashboard (default for Admin user)
     - admin_2.py: Secondary admin interface
 
-    The relative paths (e.g., "admin/admin_1.py") are resolved by
+    The relative paths (e.g., "admin/sales_metrics.py") are resolved by
     st.navigation() when the pages are loaded.
 
     Returns
@@ -151,12 +151,12 @@ def get_admin_pages():
         List of st.Page objects for admin functionality
     """
     user, role = get_current_user_and_role()
-    admin_1 = st.Page(
-        "admin/admin_1.py",
-        title="Admin 1",
-        icon=":material/person_add:",
+    sales_metrics = st.Page(
+        "admin/sales_metrics.py",
+        title="Sales Metrics",
+        icon=":material/analytics:",
         default=(role == "Admin"),
     )
-    admin_2 = st.Page("admin/admin_2.py", title="Admin 2", icon=":material/security:")
-    admin_pages = [admin_1, admin_2]
+    # admin_2 = st.Page("admin/admin_2.py", title="Admin 2", icon=":material/security:")
+    admin_pages = [sales_metrics]
     return admin_pages

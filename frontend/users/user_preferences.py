@@ -1,3 +1,39 @@
+"""
+User Preferences Management Module.
+
+This module provides comprehensive user preference management functionality for the
+Streamlit application. It allows users to manage their interests, dislikes, and
+allergies through an intuitive interface with suggested options and custom input.
+
+Key Features:
+- Interest management with suggested options and custom input
+- Dislike management with suggested options and custom input
+- Allergy management with suggested options and custom input
+- Real-time updates to user profile via API calls
+- Clean, organized interface with expandable sections
+
+The module integrates with the User class from user_and_requests to provide
+CRUD operations for user preferences. It maintains session state for efficient
+UI updates and provides immediate feedback for user actions.
+
+Preference Categories:
+- Interests: Things the user likes (e.g., hobbies, preferences)
+- Dislikes: Things the user wants to avoid
+- Allergies: Medical allergies that affect product recommendations
+
+User Interface:
+- Suggested options for quick selection
+- Custom input fields for personalized entries
+- Delete buttons for removing unwanted preferences
+- Success/error messages for user feedback
+- Organized sections with clear headings
+
+Usage:
+    This module is automatically loaded by the Streamlit navigation system
+    when users select the My Interests page from the Buyer menu. It serves
+    as the default page for Buyer users.
+"""
+
 import streamlit as st
 
 SUGGESTED_INTERESTS = [
@@ -82,6 +118,7 @@ def preference_form(preference_name: str, list_of_choices: list[str]):
     - get_dislikes(), add_dislikes(), delete_dislikes()
     - get_allergies(), add_allergies(), delete_allergies()
     """
+    st.subheader(f"{preference_name.capitalize()}")
     user = st.session_state.user  # convenience variable
     with st.form(f"{preference_name}_form"):
         preference_json = getattr(user, preference_name)

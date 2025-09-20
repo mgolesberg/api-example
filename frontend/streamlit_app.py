@@ -23,7 +23,7 @@ def run_app():
 
     Configures title, sidebar branding, role-based access control, and dynamic
     navigation menus. The navigation system works by menu.py returning Page
-    objects with relative file paths (e.g., "request/request_1.py") that
+    objects with relative file paths (e.g., "users/user_preferences.py") that
     st.navigation() automatically loads when pages are selected.
     """
     st.title("My App")
@@ -44,7 +44,7 @@ def run_app():
     user, role = menu.get_current_user_and_role()
 
     if role in ["Buyer", "Admin"]:
-        page_dict["Buyer"] = menu.get_request_pages()
+        page_dict["Buyer"] = menu.get_user_pages()
     if role == "Admin":
         page_dict["Admin"] = menu.get_admin_pages()
 

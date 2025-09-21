@@ -4,24 +4,26 @@ User and API Request Management Module.
 This module provides comprehensive classes and functions for managing user data,
 API interactions, and e-commerce functionality in the Streamlit frontend application.
 
-Key Components:
-- User: Manages user profiles, interests, dislikes, and allergies
-- OrderPurchase: Handles order and purchase data retrieval and processing
-- Product: Manages product information and cart operations
-- Utility functions for retrieving users, products, and product data
+Classes
+-------
+User
+    Manages user profiles, interests, dislikes, and allergies.
+OrderPurchase
+    Handles order and purchase data retrieval and processing.
+Product
+    Manages product information and cart operations.
 
-The module serves as the primary interface between the Streamlit frontend and the
-FastAPI backend, providing clean abstractions for common operations like user
-authentication, product browsing, and order management.
+Functions
+---------
+get_all_users()
+    Get all user IDs from the system.
+get_all_products()
+    Retrieve all products from the API.
+get_all_product_ids()
+    Get all product IDs from the API.
+get_all_active_in_stock_products()
+    Get all active products that are in stock.
 
-API Integration:
-- All classes interact with the FastAPI backend running on localhost:8000
-- Handles HTTP requests using the requests library
-- Provides error handling and data validation
-- Supports CRUD operations for user preferences and product management
-
-Usage:
-    Call these classes on streamlit pages that require them.
 """
 
 import requests
@@ -430,14 +432,15 @@ class OrderPurchase:
             return None
         return self.open_order_and_purchases[0]
 
-    def purchases_as_datafame(self, check_open_orders: bool):
+    def consolidate_purchases_as_datafame(self, check_open_orders: bool):
         """
         Convert orders and purchases to a pandas DataFrame.
 
         Parameters
         ----------
         check_open_orders : bool
-            If True, returns data for open orders. If False, returns data for closed orders.
+            If True, returns data for open orders. If False, returns data for
+            closed orders.
 
         Returns
         -------
@@ -481,6 +484,79 @@ class OrderPurchase:
                 }
             flattened_data.append(row)
         return pd.DataFrame(flattened_data)
+
+    def purchases_as_datafame(self, check_open_orders: bool):
+        """
+        Convert orders and purchases to a pandas DataFrame.
+
+        Parameters
+        ----------
+        check_open_orders : bool
+            If True, returns data for open orders. If False, returns data for
+            closed orders.
+
+        Returns
+        -------
+        pd.DataFrame
+            A DataFrame with flattened order and purchase data.
+
+        Raises
+        ------
+        requests.RequestException
+            If the API request fails during order fetching.
+        """
+        if check_open_orders:
+            if not hasattr(self, "open_order_and_purchases"):
+                self.get_orders()
+            orders = self.open_order_and_purchases
+        else:
+            if not hasattr(self, "closed_orders_and_purchases"):
+                self.get_orders()
+            orders = self.closed_orders_and_purchases
+        flattened_data = []
+
+        for i, order_data in enumerate(orders):
+            purchases = order_data["purchases"]
+
+            for j, purchase in enumerate(purchases):
+                row = {
+                    "purchase_id": purchase["id"],
+                    "quantity": purchase["quantity"],
+                    "status": purchase["status"],
+                    "product_id": purchase["product_id"],
+                    "purchase_user_id": purchase["user_id"],
+                    "purchase_total_amount": purchase["total_amount"],
+                    "purchase_created_at": purchase["created_at"],
+                    "purchase_updated_at": purchase["updated_at"],
+                }
+                flattened_data.append(row)
+
+        purchases_dataframe = pd.DataFrame(flattened_data)
+
+        if not purchases_dataframe.empty:
+            purchases_dataframe["purchase_created_at"] = pd.to_datetime(
+                purchases_dataframe["purchase_created_at"], utc=True
+            )
+            purchases_dataframe["purchase_updated_at"] = pd.to_datetime(
+                purchases_dataframe["purchase_updated_at"], utc=True
+            )
+            purchases_dataframe["quantity"] = pd.to_numeric(
+                purchases_dataframe["quantity"], errors="coerce"
+            )
+            purchases_dataframe["purchase_total_amount"] = pd.to_numeric(
+                purchases_dataframe["purchase_total_amount"], errors="coerce"
+            )
+            purchases_dataframe["purchase_id"] = pd.to_numeric(
+                purchases_dataframe["purchase_id"], errors="coerce"
+            )
+            purchases_dataframe["product_id"] = purchases_dataframe[
+                "product_id"
+            ].astype(str)
+            purchases_dataframe["purchase_user_id"] = pd.to_numeric(
+                purchases_dataframe["purchase_user_id"], errors="coerce"
+            )
+
+        return purchases_dataframe
 
 
 def get_all_products():
@@ -605,5 +681,37 @@ class Product:
         """
         json_body = {"product_id": product_id, "user_id": user_id, "quantity": quantity}
         response = requests.post(f"{self.base_url}/buy", json=json_body)
+        response.raise_for_status()
+        return response.json()
+
+    def increment_quanity(self, product_id: str, user_id: int, add: bool):
+        """
+        Increment or decrement the quantity of a product in the user's cart.
+
+        Parameters
+        ----------
+        product_id : str
+            The product's unique identifier.
+        user_id : int
+            The user's unique identifier.
+        add : bool
+            If True, increment quantity by 1. If False, decrement quantity by 1.
+
+        Returns
+        -------
+        dict
+            The response from the API.
+
+        Raises
+        ------
+        requests.RequestException
+            If the API request fails.
+        """
+        if add:
+            quantity = 1
+        else:
+            quantity = -1
+        json_body = {"product_id": product_id, "user_id": user_id, "quantity": quantity}
+        response = requests.put(f"{self.base_url}/buy", json=json_body)
         response.raise_for_status()
         return response.json()

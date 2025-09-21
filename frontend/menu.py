@@ -84,7 +84,7 @@ def get_account_pages():
 
     Creates Page objects for account-related functions:
     - Logout: Clears session state and returns to login
-    - Settings: Links to settings.py file for user preferences
+    - Shopping Cart: Links to shopping_cart.py file for cart management
 
     Returns
     -------
@@ -98,8 +98,10 @@ def get_account_pages():
         st.rerun()
 
     logout_page = st.Page(logout, title="Log out", icon=":material/logout:")
-    settings = st.Page("settings.py", title="Settings", icon=":material/settings:")
-    account_pages = [logout_page, settings]
+    shopping_cart = st.Page(
+        "shopping_cart.py", title="Shopping Cart", icon=":material/shopping_cart:"
+    )
+    account_pages = [logout_page, shopping_cart]
     return account_pages
 
 

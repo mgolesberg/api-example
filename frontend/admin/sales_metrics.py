@@ -59,10 +59,10 @@ def load_all_purchases_data():
         i: user_and_requests.OrderPurchase(i) for i in user_and_requests.get_all_users()
     }
 
-    closed_purchases = all_orders[1].purchases_as_datafame(False)
+    closed_purchases = all_orders[1].consolidate_purchases_as_datafame(False)
     for i in user_and_requests.get_all_users()[1:]:
         closed_purchases = pd.concat(
-            [closed_purchases, all_orders[i].purchases_as_datafame(False)]
+            [closed_purchases, all_orders[i].consolidate_purchases_as_datafame(False)]
         )
 
     return closed_purchases

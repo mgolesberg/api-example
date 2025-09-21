@@ -28,11 +28,14 @@ The Streamlit frontend provides an intuitive web interface with role-based acces
 
 ![Sales Analytics](images/frontend_metrics.png)
 
+![Shopping Cart](images/feature_shopping_cart.png)
+
 ### Frontend Features
 
 - **Role-based Navigation**: Different interfaces for Buyers and Admins
 - **User Preferences Management**: Manage interests, dislikes, and allergies
 - **Product Catalog**: Browse and purchase products with detailed information
+- **Shopping Cart**: Interactive cart management with real-time quantity updates and checkout
 - **Sales Analytics Dashboard**: Interactive charts and metrics for administrators
 - **Responsive Design**: Clean, modern interface with styled components
 
@@ -51,6 +54,7 @@ frontend/
 ├── streamlit_app.py    # Main Streamlit application entry point
 ├── user_and_requests.py # API client and user management utilities
 ├── menu.py             # Navigation and role management
+├── shopping_cart.py    # Shopping cart functionality and display
 ├── users/              # User-facing pages (preferences, sales)
 └── admin/              # Admin-only pages (analytics, management)
 ```

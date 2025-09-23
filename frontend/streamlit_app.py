@@ -41,7 +41,7 @@ def run_app():
     )
 
     page_dict = {}
-    user, role = menu.get_current_user_and_role()
+    _, role = menu.get_current_user_and_role()
 
     if role in ["Buyer", "Admin"]:
         page_dict["Buyer"] = menu.get_user_pages()

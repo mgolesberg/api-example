@@ -168,7 +168,7 @@ def preference_form(preference_name: str, list_of_choices: list[str]):
 
             to_delete = set(preference_list) - currently_selected
             for pref_name in to_delete:
-                if preference_name == "interests" or preference_name == "dislikes":
+                if preference_name in ["interests", "dislikes"]:
                     for pref in preference_json:
                         if pref[name_field] == pref_name:
                             getattr(user, "delete_" + preference_name)(pref["id"])

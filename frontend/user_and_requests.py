@@ -25,9 +25,9 @@ get_all_active_in_stock_products()
     Get all active products that are in stock.
 
 """
+from uuid import UUID
 
 import requests
-from uuid import UUID
 import pandas as pd
 
 
@@ -428,7 +428,7 @@ class OrderPurchase:
             self.get_orders()
         if len(self.open_order_and_purchases) > 1:
             raise ValueError(f"Multiple open orders found for user {self.user_id}")
-        elif len(self.open_order_and_purchases) == 0:
+        if len(self.open_order_and_purchases) == 0:
             return None
         return self.open_order_and_purchases[0]
 
@@ -515,10 +515,10 @@ class OrderPurchase:
             orders = self.closed_orders_and_purchases
         flattened_data = []
 
-        for i, order_data in enumerate(orders):
+        for order_data in orders:
             purchases = order_data["purchases"]
 
-            for j, purchase in enumerate(purchases):
+            for purchase in purchases:
                 row = {
                     "purchase_id": purchase["id"],
                     "quantity": purchase["quantity"],

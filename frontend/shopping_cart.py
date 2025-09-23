@@ -27,8 +27,10 @@ product quantities and displays real-time cart totals.
 """
 
 import streamlit as st
-import user_and_requests
+
 import pandas as pd
+
+import user_and_requests
 
 st.header("Shopping Cart")
 

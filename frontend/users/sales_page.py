@@ -51,7 +51,7 @@ def product_details(product_id: str):
         st.subheader(product.product_info["name"])
         st.markdown(
             f"""
-        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; 
+        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px;
                     border-left: 4px solid #667eea; margin: 15px 0;">
             <p style="font-size: 1.1em; line-height: 1.6; color: #495057; margin: 0;">
                 {product.product_info['description']}
@@ -63,7 +63,7 @@ def product_details(product_id: str):
         price = product.product_info["price"]
         st.markdown(
             f"""
-        <div style="background-color: #ffffff; padding: 12px 20px; border-radius: 8px; 
+        <div style="background-color: #ffffff; padding: 12px 20px; border-radius: 8px;
                     border: 2px solid #e9ecef; margin: 10px 0; text-align: center;">
             <span style="font-size: 1.4em; font-weight: 600; color: #495057;">
                 ${price}

@@ -121,7 +121,7 @@ def get_user_pages():
     list
         List of st.Page objects for user functionality
     """
-    user, role = get_current_user_and_role()
+    _, role = get_current_user_and_role()
     user_preferences = st.Page(
         "users/user_preferences.py",
         title="My Interests",
@@ -152,7 +152,7 @@ def get_admin_pages():
     list
         List of st.Page objects for admin functionality
     """
-    user, role = get_current_user_and_role()
+    _, role = get_current_user_and_role()
     sales_metrics = st.Page(
         "admin/sales_metrics.py",
         title="Sales Metrics",

@@ -32,11 +32,12 @@ Usage:
     run_sales_dashboard() orchestrates the entire dashboard workflow.
 """
 
+from datetime import datetime, timedelta, timezone
+
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from datetime import datetime, timedelta, timezone
 
 import user_and_requests
 
@@ -230,8 +231,8 @@ def create_daily_sales_chart(daily_sales):
             y=daily_sales["units_sold"],
             mode="lines+markers",
             name="Units Sold",
-            line=dict(color="#1f77b4", width=3),
-            marker=dict(size=6),
+            line={"color": "#1f77b4", "width": 3},
+            marker={"size": 6},
             hovertemplate="<b>Date:</b> %{x}<br><b>Units:</b> %{y:,}<extra></extra>",
         ),
         secondary_y=False,
@@ -243,9 +244,11 @@ def create_daily_sales_chart(daily_sales):
             y=daily_sales["revenue"],
             mode="lines+markers",
             name="Revenue ($)",
-            line=dict(color="#ff7f0e", width=3),
-            marker=dict(size=6),
-            hovertemplate="<b>Date:</b> %{x}<br><b>Revenue:</b> $%{y:,.2f}<extra></extra>",
+            line={"color": "#ff7f0e", "width": 3},
+            marker={"size": 6},
+            hovertemplate=(
+                "<b>Date:</b> %{x}<br><b>Revenue:</b> $%{y:,.2f}<extra></extra>"
+            ),
         ),
         secondary_y=True,
     )
@@ -259,7 +262,13 @@ def create_daily_sales_chart(daily_sales):
         },
         xaxis_title="Date",
         hovermode="x unified",
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        legend={
+            "orientation": "h",
+            "yanchor": "bottom",
+            "y": 1.02,
+            "xanchor": "right",
+            "x": 1,
+        },
         height=500,
         template="plotly_white",
     )
@@ -332,7 +341,8 @@ def display_data_summary(closed_purchases, daily_sales):
             f"""
         **Data Summary:**
         - **Total Records:** {len(closed_purchases):,}
-        - **Date Range:** {daily_sales['date'].min().strftime('%Y-%m-%d')} to {daily_sales['date'].max().strftime('%Y-%m-%d')}
+        - **Date Range:** {daily_sales['date'].min().strftime('%Y-%m-%d')} to
+          {daily_sales['date'].max().strftime('%Y-%m-%d')}
         - **Total Days:** {len(daily_sales)} days
         - **Average Units/Day:** {daily_sales['units_sold'].mean():.1f}
         - **Average Revenue/Day:** ${daily_sales['revenue'].mean():,.2f}

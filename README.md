@@ -7,28 +7,12 @@ A comprehensive FastAPI-based REST API with Streamlit frontend for user manageme
 - **RESTful API Design**: Follows REST philosophy principles
 - **Streamlit Frontend**: Interactive web interface with role-based access control
 - **Comprehensive Testing**: Full test coverage with pytest
-- **Code Quality**: Linting with pylint and code formatting with black
-- **Database Models**: SQLModel-based models with PostgreSQL support
-- **User Management**: Complete CRUD operations for user accounts with validation
 - **Product Catalog**: Product management with inventory tracking
 - **Order System**: Advanced shopping cart with real-time quantity updates, automatic total calculation, and seamless checkout process
-- **Allergy Management**: User allergy tracking and management
-- **Interest/Preference System**: User interest and dislike tracking
+- **Interest/Preference System**: User interest, dislike, and allergy tracking
 - **Sales Analytics**: Admin dashboard with interactive charts and metrics
 
-![Swagger Docs Example](images/api_swagger_v0.1.png)
-
 ## Frontend Interface
-
-The Streamlit frontend provides an intuitive web interface with role-based access control. The Streamlit is still in development, and not yet containerized.
-
-![User Preferences](images/frontend_preferences.png)
-
-![Product Catalog](images/frontend_products.png)
-
-![Sales Analytics](images/frontend_metrics.png)
-
-![Shopping Cart](images/feature_shopping_cart.png)
 
 ### Frontend Features
 
@@ -37,7 +21,16 @@ The Streamlit frontend provides an intuitive web interface with role-based acces
 - **Product Catalog**: Browse and purchase products with detailed information
 - **Shopping Cart**: Interactive cart management with real-time quantity updates and checkout
 - **Sales Analytics Dashboard**: Interactive charts and metrics for administrators
-- **Responsive Design**: Clean, modern interface with styled components
+
+### Frontend Examples
+
+![User Preferences](images/frontend_preferences.png)
+
+![Product Catalog](images/frontend_products.png)
+
+![Shopping Cart](images/feature_shopping_cart.png)
+
+![Sales Analytics when logged in as Admin (the last users)](images/frontend_metrics.png)
 
 ## Architecture
 
@@ -56,7 +49,10 @@ frontend/
 ├── menu.py             # Navigation and role management
 ├── shopping_cart.py    # Shopping cart functionality and display
 ├── users/              # User-facing pages (preferences, sales)
-└── admin/              # Admin-only pages (analytics, management)
+├── admin/              # Admin-only pages (analytics, management)
+└── tests/              # Frontend test suite
+    ├── conftest.py     # Test configuration and fixtures
+    └── test_app.py     # Streamlit application tests
 ```
 
 ### Core Components
@@ -67,98 +63,73 @@ frontend/
 - **PostgreSQL**: Robust relational database backend
 - **Pytest**: Testing framework with coverage reporting
 
-## Prerequisites
-
-- Python 3.8+
-- PostgreSQL database
-- pip (Python package manager)
-
 ## Running the app in Docker
 
-1.  Make sure you have Docker Desktop installed
+The project includes a complete Docker setup with all services containerized for easy deployment and development.
 
-2.  ```bash
-    docker compose up
-    ```
+### Prerequisites
 
-## Running the app locally
+1. **Docker Desktop**: Make sure you have Docker Desktop installed and running
+2. **Docker Compose**: Ensure Docker Compose is available (included with Docker Desktop)
 
-1. **Clone the repository**
+### Quick Start
+
+1. **Clone the repository** (if not already done)
 
    ```bash
    git clone <repository-url>
-   cd "API Example"
+   cd api-example
    ```
 
-2. **Create and activate virtual environment**
+2. **Start all services**
 
    ```bash
-   python -m venv venv
-   # On Windows
-   venv\Scripts\activate
-   # On macOS/Linux
-   source venv/bin/activate
+   docker compose up
    ```
 
-3. **Install dependencies**
+   This will start:
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+   - **PostgreSQL Database** (port 5432) - Database backend
+   - **Database Initialization** - Sets up tables and sample data
+   - **FastAPI Backend** (port 8000) - REST API server
+   - **Streamlit Frontend** (port 8501) - Web interface
 
-4. **Set up environment variables**
-   Create a `.env` file in the root directory:
+3. **Access the application**
+   - **API Documentation**: http://localhost:8000/docs
+   - **Frontend Interface**: http://localhost:8501
 
-   ```env
-   DB_NAME=postgres
-   DB_USER=postgres
-   DB_PASS=X
-   DB_HOST=localhost
-   DB_PORT=5432
-   ```
+### Docker Services
 
-5. **Initialize the database**
+The Docker Compose setup includes four services:
 
-   ```bash
-   python -m src.db_init.tables_initialize
-   ```
+- **`db`**: PostgreSQL 17.6 database with persistent storage
+- **`db_init`**: Database initialization service that creates tables and populates sample data
+- **`api`**: FastAPI backend server with automatic reloading
+- **`streamlit`**: Streamlit frontend application
 
-## Running the Application
+### Environment Variables
 
-### Development Server
+The Docker setup uses the following environment variables (automatically configured):
 
-```bash
-fastapi dev app.py
+```env
+DB_USER=postgres
+DB_PASS=postgres
+DB_NAME=postgres
+DB_HOST=db
+DB_PORT=5432
 ```
-
-### Production Server
-
-```bash
-uvicorn app:app --host 0.0.0.0 --port 8000
-```
-
-The API will be available at `http://localhost:8000`
-
-### Frontend Application
-
-To run the Streamlit frontend:
-
-```bash
-streamlit run frontend/streamlit_app.py
-```
-
-The frontend will be available at `http://localhost:8501`
 
 ## API Documentation
 
 Once the server is running, you can access:
 
 - **Interactive API Docs**: `http://localhost:8000/docs` (Swagger UI)
-- **Alternative API Docs**: `http://localhost:8000/redoc` (ReDoc)
 
-![API Example](images/api_get_allergy_v0.1.png)
+![Swagger Docs Example](images/api_swagger_v0.1.png)
 
 ## API Endpoints
+
+![API Example](images/api_get_allergy_v0.1.png)
 
 ### Users (`/user`)
 
@@ -223,7 +194,7 @@ pytest tests/routes/test_user.py
 
 ### Current coverage
 
-![Current Coverage](images/test_cov_v0.1.png)
+![Current Backend Coverage](images/test_cov_v0.1.png)
 
 ## Database Models
 

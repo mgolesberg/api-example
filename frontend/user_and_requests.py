@@ -53,7 +53,7 @@ class User:
     email : str
         The user's email address.
     base_url : str
-        The base URL for API requests (default: "http://localhost:8000").
+        The base URL for API requests (default: "http://api:8000").
     """
 
     def __init__(
@@ -63,7 +63,7 @@ class User:
     ):
         self.user_id = user_id
         self.email = email
-        self.base_url = "http://localhost:8000"
+        self.base_url = "http://api:8000"
 
         if self.email and not self.user_id:
             self._fetch_user_id()
@@ -379,7 +379,7 @@ class OrderPurchase:
 
     def __init__(self, user_id: int):
         self.user_id = user_id
-        self.base_url = "http://localhost:8000"
+        self.base_url = "http://api:8000"
         self.get_orders()
 
     def get_orders(self):
@@ -573,7 +573,7 @@ def get_all_products():
     requests.RequestException
         If the API request fails.
     """
-    base_url = "http://localhost:8000"
+    base_url = "http://api:8000"
     response = requests.get(f"{base_url}/product/")
     response.raise_for_status()
     return response.json()
@@ -640,7 +640,7 @@ class Product:
 
     def __init__(self, product_id: str):
         self.product_id = UUID(product_id)
-        self.base_url = "http://localhost:8000"
+        self.base_url = "http://api:8000"
         self.get_product_info()
 
     def get_product_info(self):

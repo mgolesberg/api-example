@@ -52,5 +52,17 @@ services:
       DB_NAME: postgres
       DB_HOST: db
       DB_PORT: 5432
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: streamlit
+    depends_on:
+      api:
+        condition: service_started
+    ports:
+      - 8501:8501
+    volumes:
+      - .:/app
 volumes:
   db_data:

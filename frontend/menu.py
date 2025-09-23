@@ -159,6 +159,5 @@ def get_admin_pages():
         icon=":material/analytics:",
         default=(role == "Admin"),
     )
-    # admin_2 = st.Page("admin/admin_2.py", title="Admin 2", icon=":material/security:")
     admin_pages = [sales_metrics]
     return admin_pages

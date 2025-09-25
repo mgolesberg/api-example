@@ -59,6 +59,7 @@ services:
       context: .
       dockerfile: Dockerfile.streamlit
     container_name: streamlit
+    restart: always
     depends_on:
       api:
         condition: service_started

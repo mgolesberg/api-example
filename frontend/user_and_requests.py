@@ -558,6 +558,25 @@ class OrderPurchase:
 
         return purchases_dataframe
 
+    def checkout(self):
+        """
+        Complete the checkout process for a user.
+
+
+        Returns
+        -------
+        dict
+            The response from the API.
+
+        Raises
+        ------
+        requests.RequestException
+            If the API request fails.
+        """
+        response = requests.post(f"{self.base_url}/buy/checkout/{self.user_id}")
+        response.raise_for_status()
+        return response.json()
+
 
 def get_all_products():
     """
@@ -618,6 +637,7 @@ def get_all_active_in_stock_products():
         if product["is_active"] and product["quantity"] > 0
     ]
 
+    
 
 class Product:
     """
@@ -715,3 +735,4 @@ class Product:
         response = requests.put(f"{self.base_url}/buy", json=json_body)
         response.raise_for_status()
         return response.json()
+

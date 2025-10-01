@@ -25,7 +25,7 @@ product quantities and displays real-time cart totals.
 
 
 """
-
+import time
 import streamlit as st
 
 import pandas as pd
@@ -122,6 +122,12 @@ def display_a_cart_item(product_row):
                 )
                 st.rerun()
 
+def checkout_button():
+    if st.button("Checkout!", key="checkout"):
+        user_and_requests.OrderPurchase(st.session_state.user.user_id).checkout()
+        st.success("Checkout successful!")
+        time.sleep(2)
+        st.rerun()
 
 def display_cart_items():
     """
@@ -155,6 +161,7 @@ def display_cart_items():
         """,
         unsafe_allow_html=True,
     )
+    checkout_button()
 
 
 if __name__ == "__main__":

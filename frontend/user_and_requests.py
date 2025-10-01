@@ -562,7 +562,6 @@ class OrderPurchase:
         """
         Complete the checkout process for a user.
 
-
         Returns
         -------
         dict

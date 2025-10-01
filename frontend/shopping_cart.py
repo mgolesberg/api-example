@@ -123,6 +123,16 @@ def display_a_cart_item(product_row):
                 st.rerun()
 
 def checkout_button():
+    """
+    Display a checkout button and process the checkout when clicked.
+    
+    Raises
+    ------
+    requests.RequestException
+        If the API request fails during checkout processing.
+    AttributeError
+        If st.session_state.user is not properly initialized.
+    """
     if st.button("Checkout!", key="checkout"):
         user_and_requests.OrderPurchase(st.session_state.user.user_id).checkout()
         st.success("Checkout successful!")
